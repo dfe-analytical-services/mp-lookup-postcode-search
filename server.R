@@ -534,6 +534,13 @@ server <- function(input, output, session) {
     paste0("Current selections: ", input$selectPhase, ", ", input$selectArea)
   })
 
+  # MP lookup ---------------------------------------------------------------
+  updateSelectizeInput(session, "select_postcode", choices = postcode_input_list, server = TRUE)
+
+  output$mpinfo <- renderReactable({
+    reactable(mp_data_finder(chosen_postcode = c(input$select_postcode)), bordered = TRUE)
+  })
+
   # footer links -----------------------
   shiny::observeEvent(input$accessibility_statement, {
     shiny::updateTabsetPanel(session, "navlistPanel", selected = "a11y_panel")

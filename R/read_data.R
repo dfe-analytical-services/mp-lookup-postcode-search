@@ -39,3 +39,11 @@ read_upper_tier_data <- function(file = "data/Local_Authority_Districts_All_simp
   df_upper_tier <- sf::read_sf(file)
   return(df_upper_tier)
 }
+
+
+# Post code data ----------------------------------------------------------
+
+mp_data <- read.csv("data/pcd_to_pcon_lookup_may_24.csv")
+
+postcode_input_list <- mp_data %>%
+  dplyr::pull(pcd)

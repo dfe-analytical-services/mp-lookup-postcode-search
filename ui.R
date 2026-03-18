@@ -119,6 +119,28 @@ ui <- function(input, output, session) {
           repo_name = "https://github.com/dfe-analytical-services/shiny-template",
           form_url = "https://forms.office.com"
         )
+      ),
+      shiny::tabPanel(
+        value = "mp_lookup_ui",
+        "MP lookup",
+        shiny::fluidRow(
+          div(
+            style = "margin-bottom: 0.75rem",
+            selectizeInput(
+              "select_postcode",
+              label = "Choose a postcode",
+              choices = NULL,
+              # Start with an empty selection
+              options = list(
+                placeholder = "Please select a postcode",
+                onInitialize = I('function() { this.setValue(""); }')
+              )
+            )
+          ),
+          div(
+            id = "table_output", reactableOutput("mpinfo")
+          )
+        )
       )
     ),
 
