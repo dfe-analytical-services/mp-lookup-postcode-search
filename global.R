@@ -21,18 +21,9 @@ shhh(library(dfeR))
 shhh(library(dfeshiny))
 shhh(library(shinyGovstyle))
 
-# Creating charts and tables
-shhh(library(ggplot2))
-shhh(library(DT))
-shhh(library(sf))
-shhh(library(leaflet))
+# Creating tables
 shhh(library(htmltools))
 shhh(library(reactable))
-shhh(library(svglite))
-shhh(library(afcharts))
-shhh(library(ggrepel))
-shhh(library(showtext))
-shhh(library(openxlsx))
 
 # Data and string manipulation
 shhh(library(dplyr))
@@ -76,13 +67,13 @@ lapply(list.files("R/ui_panels/", full.names = TRUE), source)
 
 # Set global variables --------------------------------------------------------
 
-site_title <- "Department for Education (DfE) Shiny Template" # name of app
-parent_pub_name <- "Statistical publication" # name of source publication
+site_title <- "Department for Education (DfE) MP postcode search" # name of app
+parent_pub_name <- "MP lookup" # name of source publication
 parent_publication <- # link to source publication
-  "https://explore-education-statistics.service.gov.uk/find-statistics/apprenticeships"
+  "https://github.com/dfe-analytical-services/mp-lookup"
 
 # Set the URLs that the site will be published to
-site_primary <- "https://department-for-education.shinyapps.io/dfe-shiny-template/"
+site_primary <- "https://department-for-education.shinyapps.io/dfe-mp-lookup-postcode-search/"
 
 # Combine URLs into list for disconnect function
 # We can add further mirrors where necessary. Each one can generally handle
@@ -108,53 +99,7 @@ register_font(
 )
 showtext_auto()
 
-# Read in the data ------------------------------------------------------------
-df_revbal <- read_revenue_data()
-
-# Get geographical areas from data
-df_areas <- df_revbal %>%
-  select(
-    geographic_level, country_name, country_code,
-    region_name, region_code,
-    la_name, old_la_code, new_la_code
-  ) %>%
-  distinct()
-
-df_upper_tier_geo <- read_upper_tier_data()
-
-df_upper_tier_all <- df_upper_tier_geo %>%
-  dplyr::select(new_la_code, LONG, LAT, geometry) %>%
-  inner_join(df_revbal,
-    by = "new_la_code"
-  ) %>%
-  rowwise() %>%
-  mutate(lab = HTML(sprintf(
-    "<b> %s </b> </br> %s </br> %s %s",
-    strong(area_name),
-    "Schools with deficit",
-    PC_schools_with_deficit, "%"
-  )))
-
 # Extract lists for use in drop downs -----------------------------------------
-# LA list
-choices_las <- df_areas %>%
-  filter(geographic_level == "Local authority") %>%
-  select(geographic_level, area_name = la_name) %>%
-  arrange(area_name)
 
-# Full list of areas
-choices_areas <- df_areas %>%
-  filter(geographic_level == "National") %>%
-  select(geographic_level, area_name = country_name) %>%
-  rbind(
-    df_areas %>%
-      filter(geographic_level == "Regional") %>%
-      select(geographic_level, area_name = region_name)
-  ) %>%
-  rbind(choices_las)
-
-# List of phases
-choices_phase <- unique(df_revbal$school_phase)
-
-# List of years
-df_revbal_years <- sort(unique(df_revbal$year))
+postcode_input_list <- mp_data %>%
+  dplyr::pull(pcd)

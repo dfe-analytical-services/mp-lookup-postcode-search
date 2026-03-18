@@ -21,7 +21,7 @@
 ui <- function(input, output, session) {
   bslib::page_fluid(
     # Set application metadata ------------------------------------------------
-    tags$head(HTML("<title>Department for Education (DfE) Shiny Template</title>")),
+    tags$head(HTML("<title>Department for Education (DfE) MP lookup</title>")),
     tags$head(tags$link(rel = "shortcut icon", href = "dfefavicon.png")),
     use_shiny_title(),
     useShinyjs(),
@@ -29,8 +29,8 @@ ui <- function(input, output, session) {
     # Add meta description for search engines
     meta() %>%
       meta_general(
-        application_name = "Department for Education (DfE) Shiny Template",
-        description = "Department for Education (DfE) Shiny Template",
+        application_name = "Department for Education (DfE) Shiny MP lookup",
+        description = "Department for Education (DfE) MP lookup",
         robots = "index,follow",
         generator = "R-Shiny",
         subject = "stats development",
@@ -89,9 +89,41 @@ ui <- function(input, output, session) {
       id = "navlistPanel",
       widths = c(2, 8),
       well = FALSE,
-      # Content for these panels is defined in the R/ui_panels/ folder
-      example_tab_1_panel(),
+
+      # MP lookup page
+      shiny::tabPanel(
+        value = "mp_lookup_ui",
+        "MP lookup",
+        gov_main_layout(
+          gov_row(
+            column(
+              10,
+              h1("MP Lookup"),
+              div(
+                selectizeInput(
+                  "select_postcode",
+                  label = "Choose a postcode",
+                  choices = NULL,
+                  # Start with an empty selection
+                  options = list(
+                    placeholder = "Please select a postcode",
+                    onInitialize = I('function() { this.setValue(""); }')
+                  )
+                )
+              ),
+              div(
+                id = "table_output", reactableOutput("mpinfo")
+              )
+            )
+          )
+        )
+      ),
+
+      # User guide page
+      # Sourced from R/ui_panels/user_guide.R
       user_guide_panel(),
+
+      # Accessibility page
       shiny::tabPanel(
         value = "a11y_panel",
         "Accessibility",
@@ -106,40 +138,22 @@ ui <- function(input, output, session) {
           specific_issues = c("List specific issues here")
         )
       ),
+
+      # Cookies page
       shiny::tabPanel(
         value = "cookies_panel_ui",
         "Cookies",
         cookies_panel_ui(google_analytics_key = google_analytics_key)
       ),
+
+      # Support page
       shiny::tabPanel(
         value = "support_panel_ui",
         "Support and feedback",
         support_panel(
           team_email = "explore.statistics@education.gov.uk",
-          repo_name = "https://github.com/dfe-analytical-services/shiny-template",
+          repo_name = "https://github.com/dfe-analytical-services/mp-lookup-postcode-search",
           form_url = "https://forms.office.com"
-        )
-      ),
-      shiny::tabPanel(
-        value = "mp_lookup_ui",
-        "MP lookup",
-        shiny::fluidRow(
-          div(
-            style = "margin-bottom: 0.75rem",
-            selectizeInput(
-              "select_postcode",
-              label = "Choose a postcode",
-              choices = NULL,
-              # Start with an empty selection
-              options = list(
-                placeholder = "Please select a postcode",
-                onInitialize = I('function() { this.setValue(""); }')
-              )
-            )
-          ),
-          div(
-            id = "table_output", reactableOutput("mpinfo")
-          )
         )
       )
     ),
