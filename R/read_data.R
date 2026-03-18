@@ -15,4 +15,23 @@
 
 # Post code data ----------------------------------------------------------
 
-mp_data <- read.csv("data/pcd_to_pcon_lookup_may_24.csv")
+read_postcode_data <- function(file = "data/pcd_to_pcon_lookup_may_24.csv") {
+  # Use read.csv to read in data file
+  postcode_data <- read.csv(file)
+
+  # Format data file to expected format (adding space before last 3 characters)
+  postcode_data <- postcode_data %>%
+    dplyr::mutate(
+      across(
+        .cols = pcd,
+        .fns = function(pcd) {
+          sub("(.{3})$", " \\1", trimws(pcd))
+        }
+      )
+    ) %>%
+    dplyr::rename(
+      Postcode = pcd
+    )
+
+  return(postcode_data)
+}

@@ -88,18 +88,9 @@ google_analytics_key <- "Z967JJVQQX"
 # Enable bookmarking so that input choices are shown in the url ---------------
 enableBookmarking("url")
 
-# Fonts for charts ------------------------------------------------------------
-font_add("dejavu", "www/fonts/DejaVuSans.ttf")
-register_font(
-  "dejavu",
-  plain = "www/fonts/DejaVuSans.ttf",
-  bold = "www/fonts/DejaVuSans-Bold.ttf",
-  italic = "www/fonts/DejaVuSans-Oblique.ttf",
-  bolditalic = "www/fonts/DejaVuSans-BoldOblique.ttf"
-)
-showtext_auto()
+# Read in data ----------------------------------------------------------------
+postcode_data <- read_postcode_data()
 
 # Extract lists for use in drop downs -----------------------------------------
-
-postcode_input_list <- mp_data %>%
-  dplyr::pull(pcd)
+postcode_input_list <- postcode_data %>%
+  dplyr::pull(Postcode)
