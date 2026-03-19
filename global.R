@@ -91,6 +91,8 @@ enableBookmarking("url")
 # Read in data ----------------------------------------------------------------
 postcode_data <- read_postcode_data()
 
+mp_data <- read_mp_data()
+
 # Extract lists for use in drop downs -----------------------------------------
 postcode_input_list <- postcode_data %>%
   dplyr::pull(Postcode)
