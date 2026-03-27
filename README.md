@@ -42,8 +42,6 @@ This R Shiny app is currently still under development.
 
 The intention is for users to be able to search postcodes in the app, once deployed, to retrieve up-to-date MP information for the chosen location.
 
-...
-
 ### Running the app locally
 
 1. Clone or download the repo. 
@@ -57,8 +55,6 @@ The intention is for users to be able to search postcodes in the app, once deplo
 ### Folder structure
 
 All R code outside of the core `global.R`, `server.R`, and `ui.R` files is stored in the `R/` folder. There is a `R/helper_functions.R` file for common custom functions, and scripts for the different UI panels in the `R/ui_panels/` folder.
-
-...
 
 ### Packages
 
@@ -107,5 +103,3 @@ You can also use the "Issues" tab in GitHub to suggest new features, changes or 
 ## Contact
 
 The best way to get in contact would be to [rasie and issue](https://github.com/dfe-analytical-services/mp-lookup-postcode-search/issues) on this repository.
-
-...

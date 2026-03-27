@@ -11,25 +11,23 @@
 # Post code data ----------------------------------------------------------
 
 read_postcode_data <- function(file = "data/pcd_to_pcon_lookup_may_24.csv") {
-  # Use read.csv to read in data file
+  # Read file
   postcode_data <- read.csv(file)
 
-  # Format data file to suitable format (add space before last 3 characters)
+  # Format data
   postcode_data <- postcode_data %>%
-    dplyr::mutate(
-      across(
-        .cols = pcd,
-        .fns = function(pcd) {
-          sub("(.{3})$", " \\1", trimws(pcd))
-        }
-      )
+    mutate(
+      # Remove ALL whitespace from postcode
+      pcd = gsub("\\s+", "", pcd),
+
+      # Then reinsert a space before the last 3 characters (standard UK format)
+      pcd = sub("(.{3})$", " \\1", pcd)
     ) %>%
-    dplyr::rename(
-      Postcode = pcd,
+    rename(
+      Postcode  = pcd,
       pcon_code = pconcd
     )
 
-  # Return data file
   return(postcode_data)
 }
 
