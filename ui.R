@@ -53,7 +53,7 @@ ui <- function(input, output, session) {
     # Setting up cookie consent based on a cookie recording the consent:
     dfeshiny::dfe_cookies_script(),
     dfeshiny::cookies_banner_ui(
-      name = "Department for Education (DfE) Shiny Template"
+      name = "Department for Education (DfE) MP lookup"
     ),
 
     # Skip_to_main -------------------------------------------------------------
@@ -63,17 +63,12 @@ ui <- function(input, output, session) {
 
     # Google analytics --------------------------------------------------------
     tags$head(includeHTML(("google-analytics.html"))),
-    tags$head(
-      tags$link(
-        rel = "stylesheet",
-        type = "text/css",
-        href = "dfe_shiny_gov_style.css"
-      )
-    ),
 
     # Header ------------------------------------------------------------------
-    dfeshiny::header(
-      header = "Department for Education (DfE) Shiny Template"
+    shinyGovstyle::full_width_overrides(),
+    shinyGovstyle::header(
+      org_name = "Department for Education (DfE)",
+      service_name = "Department for Education (DfE) MP lookup"
     ),
 
     # Beta banner -------------------------------------------------------------

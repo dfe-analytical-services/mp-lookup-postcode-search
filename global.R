@@ -25,10 +25,16 @@ shhh(library(shinyGovstyle))
 shhh(library(htmltools))
 shhh(library(reactable))
 
+# Reading files
+shhh(library(openxlsx))
+shhh(library(readxl))
+shhh(library(arrow))
+
 # Data and string manipulation
 shhh(library(dplyr))
 shhh(library(stringr))
 shhh(library(ggiraph))
+shhh(library(janitor))
 
 # Shiny extensions
 shhh(library(shinyjs))
