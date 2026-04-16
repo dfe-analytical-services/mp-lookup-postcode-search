@@ -17,14 +17,14 @@ read_postcode_data <- function(file = "data/pcd_to_pcon_lookup_may_24.csv") {
   postcode_data <- read.csv(file)
 
   # Format data
-  postcode_data <- postcode_data %>%
+  postcode_data <- postcode_data |>
     mutate(
       # Remove ALL whitespace from postcode
       pcd = gsub("\\s+", "", pcd),
 
       # Then reinsert a space before the last 3 characters (standard UK format)
       pcd = sub("(.{3})$", " \\1", pcd)
-    ) %>%
+    ) |>
     rename(
       Postcode  = pcd,
       pcon_code = pconcd
@@ -40,7 +40,7 @@ read_mp_data <- function(file = "https://raw.githubusercontent.com/dfe-analytica
   mp_data <- read.csv(file)
 
   # Format data file to suitable format (select only relevant columns)
-  mp_data <- mp_data %>%
+  mp_data <- mp_data |>
     dplyr::select(-c("election_result_summary_2024":"country_code"))
 
   # Return data file
