@@ -17,6 +17,8 @@
 #
 #    https://github.com/moj-analytical-services/shinyGovstyle
 #
+# TODO: Explore CSS and width to make best use of layout.
+#
 # -----------------------------------------------------------------------------
 ui <- function(input, output, session) {
   bslib::page_fluid(
@@ -79,6 +81,7 @@ ui <- function(input, output, session) {
     ),
 
     # Nav panels --------------------------------------------------------------
+    # TODO: Consider dropping the nav panels that are not needed.
     shiny::navlistPanel(
       "",
       id = "navlistPanel",
@@ -94,7 +97,10 @@ ui <- function(input, output, session) {
             column(
               10,
               h1("MP Lookup"),
+              # TODO: Add user guidance briefly above the tool to replace panel
               div(
+                # TODO: Explore search input and search button
+                # If used consider how multiple matching postcodes are shown
                 selectizeInput(
                   "select_postcode",
                   label = "Choose a postcode",
@@ -106,6 +112,8 @@ ui <- function(input, output, session) {
                   )
                 )
               ),
+              # TODO: Explore data download or copy to clipboard outputs
+              # TODO: Explore pretty and jazzy alternate outputs, value boxes, maps, alternative table designs
               div(
                 id = "table_output", reactableOutput("mpinfo")
               )

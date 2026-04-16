@@ -10,6 +10,8 @@
 
 # Post code data ----------------------------------------------------------
 
+# TODO: Explore what geography data HoC use in their MP information tool
+# TODO: Explore databricks postcode data, brought in by API.
 read_postcode_data <- function(file = "data/pcd_to_pcon_lookup_may_24.csv") {
   # Read file
   postcode_data <- read.csv(file)
