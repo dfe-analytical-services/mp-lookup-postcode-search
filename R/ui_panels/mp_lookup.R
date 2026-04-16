@@ -12,6 +12,4 @@ mp_data_finder <- function(chosen_postcode) {
       Constituency = pcon_name
     ) |>
     select(-pcon_code, -member_id)
-
-  return(data)
 }
