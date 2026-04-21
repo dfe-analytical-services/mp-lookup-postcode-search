@@ -17,8 +17,6 @@
 #
 #    https://github.com/moj-analytical-services/shinyGovstyle
 #
-# TODO: Explore CSS and width to make best use of layout.
-#
 # -----------------------------------------------------------------------------
 ui <- function(input, output, session) {
   bslib::page_fluid(
@@ -77,27 +75,34 @@ ui <- function(input, output, session) {
     shinyGovstyle::banner(
       "beta banner",
       "Beta",
-      "This dashboard is in beta phase and we are still reviewing performance and reliability."
+      "This dashboard is in beta phase and we are still reviewing performance and reliability.
+      If you have any questions or feedback, please contact
+      <a href='mailto:HoP.statistics@education.gov.uk'>HoP.statistics@education.gov.uk</a>."
     ),
 
-    # Nav panels --------------------------------------------------------------
-    # TODO: Consider dropping the nav panels that are not needed.
-    shiny::navlistPanel(
-      "",
-      id = "navlistPanel",
-      widths = c(2, 8),
-      well = FALSE,
+    # Tab panels --------------------------------------------------------------
+    shiny::tabsetPanel(
+      id = "footer_links",
+      selected = "mp_lookup",
+      type = "hidden",
 
       # MP lookup page
       shiny::tabPanel(
-        value = "mp_lookup_ui",
+        value = "mp_lookup",
         "MP lookup",
         gov_main_layout(
           gov_row(
             column(
               10,
               h1("MP Lookup"),
-              # TODO: Add user guidance briefly above the tool to replace panel
+              p("Please search a postcode to retrieve up-to-date MP information for that area."),
+              p(
+                "This tool uses the ",
+                a("DfE's MP Lookup", href = "https://github.com/dfe-analytical-services/mp-lookup"),
+                "which updates from the ",
+                a("UK Parliament API", href = "https://data.parliament.uk/membersdataplatform/default.aspx"),
+                "daily."
+              ),
               div(
                 # TODO: Explore search input and search button
                 # If used consider how multiple matching postcodes are shown
@@ -113,32 +118,40 @@ ui <- function(input, output, session) {
                 )
               ),
               # TODO: Explore data download or copy to clipboard outputs
-              # TODO: Explore pretty and jazzy alternate outputs, value boxes, maps, alternative table designs
               div(
-                id = "table_output", reactableOutput("mpinfo")
+                id = "table_output",
+                govReactableOutput(
+                  "mpinfo",
+                  caption = "MP information for chosen postcode.",
+                  caption_size = "s"
+                )
               )
             )
           )
         )
       ),
 
-      # User guide page
-      # Sourced from R/ui_panels/user_guide.R
-      user_guide_panel(),
-
       # Accessibility page
       shiny::tabPanel(
         value = "a11y_panel",
         "Accessibility",
-        dfeshiny::a11y_panel(
-          dashboard_title = site_title,
-          dashboard_url = site_primary,
-          date_tested = "12th March 2024",
-          date_prepared = "1st July 2024",
-          date_reviewed = "1st July 2024",
-          issues_contact = "explore.statistics@education.gov.uk",
-          non_accessible_components = c("List non-accessible components here"),
-          specific_issues = c("List specific issues here")
+        shinyGovstyle::gov_main_layout(
+          gov_row(
+            column(
+              10,
+              shinyGovstyle::backlink_Input("back_to_lookup"),
+              dfeshiny::a11y_panel(
+                dashboard_title = site_title,
+                dashboard_url = site_primary,
+                date_tested = "12th March 2024",
+                date_prepared = "1st July 2024",
+                date_reviewed = "1st July 2024",
+                issues_contact = "explore.statistics@education.gov.uk",
+                non_accessible_components = c("List non-accessible components here"),
+                specific_issues = c("List specific issues here")
+              )
+            )
+          )
         )
       ),
 
@@ -146,17 +159,14 @@ ui <- function(input, output, session) {
       shiny::tabPanel(
         value = "cookies_panel_ui",
         "Cookies",
-        cookies_panel_ui(google_analytics_key = google_analytics_key)
-      ),
-
-      # Support page
-      shiny::tabPanel(
-        value = "support_panel_ui",
-        "Support and feedback",
-        support_panel(
-          team_email = "explore.statistics@education.gov.uk",
-          repo_name = "https://github.com/dfe-analytical-services/mp-lookup-postcode-search",
-          form_url = "https://forms.office.com"
+        shinyGovstyle::gov_main_layout(
+          gov_row(
+            column(
+              10,
+              shinyGovstyle::backlink_Input("back_to_lookup"),
+              cookies_panel_ui(google_analytics_key = google_analytics_key)
+            )
+          )
         )
       )
     ),
@@ -167,9 +177,7 @@ ui <- function(input, output, session) {
       links = c(
         "Accessibility statement",
         "Use of cookies",
-        "Support and feedback",
-        "Privacy notice",
-        "External link"
+        "Privacy notice"
       )
     )
   )

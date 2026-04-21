@@ -26,15 +26,10 @@ shhh(library(htmltools))
 shhh(library(reactable))
 
 # Reading files
-shhh(library(openxlsx))
-shhh(library(readxl))
 shhh(library(arrow))
 
 # Data and string manipulation
 shhh(library(dplyr))
-shhh(library(stringr))
-shhh(library(ggiraph))
-shhh(library(janitor))
 
 # Shiny extensions
 shhh(library(shinyjs))
@@ -66,8 +61,6 @@ source("R/read_data.R")
 # Source custom functions script
 source("R/helper_functions.R")
 
-gbp <- enc2utf8("\u00A3")
-
 # Source all files in the ui_panels folder
 lapply(list.files("R/ui_panels/", full.names = TRUE), source)
 
@@ -90,9 +83,6 @@ sites_list <- c(site_primary)
 google_analytics_key <- "Z967JJVQQX"
 
 # End of global variables -----------------------------------------------------
-
-# Enable bookmarking so that input choices are shown in the url ---------------
-enableBookmarking("url")
 
 # Read in data ----------------------------------------------------------------
 postcode_data <- read_postcode_data()
