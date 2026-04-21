@@ -61,12 +61,9 @@ source("R/read_data.R")
 # Source custom functions script
 source("R/helper_functions.R")
 
-# Source all files in the ui_panels folder
-lapply(list.files("R/ui_panels/", full.names = TRUE), source)
-
 # Set global variables --------------------------------------------------------
 
-site_title <- "Department for Education (DfE) MP postcode search" # name of app
+site_title <- "Department for Education (DfE) MP lookup" # name of app
 parent_pub_name <- "MP lookup" # name of source publication
 parent_publication <- # link to source publication
   "https://github.com/dfe-analytical-services/mp-lookup"
@@ -86,8 +83,6 @@ google_analytics_key <- "Z967JJVQQX"
 
 # Read in data ----------------------------------------------------------------
 postcode_data <- read_postcode_data()
-
-mp_data <- read_mp_data()
 
 # Extract lists for use in drop downs -----------------------------------------
 postcode_input_list <- postcode_data |>

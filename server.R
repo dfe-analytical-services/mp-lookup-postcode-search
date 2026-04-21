@@ -33,11 +33,36 @@ server <- function(input, output, session) {
   )
 
   # MP lookup ---------------------------------------------------------------
-  updateSelectizeInput(session, "select_postcode", choices = postcode_input_list, server = TRUE)
+  observeEvent(input$postcode_search, {
+    if (input$postcode_text %in% postcode_input_list) {
+      shinyGovstyle::error_off(inputId = "postcode_text")
+    } else {
+      shinyGovstyle::error_on(
+        inputId = "postcode_text",
+        error_message = "Please ensure postcode is in the format AB12 3CD."
+      )
+    }
+  })
+
+  mp_data <- read_mp_data()
 
   output$mpinfo <- renderGovReactable({
-    govReactable(mp_data_finder(chosen_postcode = c(input$select_postcode)), bordered = TRUE)
-  })
+    shinyGovstyle::govReactable(
+      output_table <- postcode_data |>
+        dplyr::filter(Postcode == paste(input$postcode_text)) |>
+        dplyr::left_join(mp_data, by = "pcon_code") |>
+        dplyr::rename(
+          Party = party_text,
+          Name = display_as,
+          "Full Title" = full_title,
+          "Member Email" = member_email,
+          Constituency = pcon_name
+        ) |>
+        select(-c("pcon_code", "member_id"))
+    )
+  }) |>
+    shiny::bindCache(input$postcode_text) |>
+    shiny::bindEvent(input$postcode_search)
 
   # footer links -----------------------
   shiny::observeEvent(input$accessibility_statement, {

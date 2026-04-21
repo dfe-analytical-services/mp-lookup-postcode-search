@@ -104,17 +104,16 @@ ui <- function(input, output, session) {
                 "daily."
               ),
               div(
-                # TODO: Explore search input and search button
-                # If used consider how multiple matching postcodes are shown
-                selectizeInput(
-                  "select_postcode",
-                  label = "Choose a postcode",
-                  choices = NULL,
-                  # Start with an empty selection
-                  options = list(
-                    placeholder = "Please select a postcode",
-                    onInitialize = I('function() { this.setValue(""); }')
-                  )
+                shinyGovstyle::text_Input(
+                  inputId = "postcode_text",
+                  label = "Enter a postcode",
+                  hint_label = "Please enter a valid UK postcode",
+                  width = 5,
+                  error = TRUE
+                ),
+                shinyGovstyle::button_Input(
+                  inputId = "postcode_search",
+                  label = "Search"
                 )
               ),
               # TODO: Explore data download or copy to clipboard outputs
