@@ -95,12 +95,20 @@ ui <- function(input, output, session) {
             column(
               10,
               h1("MP Lookup"),
-              p("Please search a postcode to retrieve up-to-date MP information for that area."),
+              p(
+                "Please search a postcode to retrieve up-to-date MP information for that area."
+              ),
               p(
                 "This tool uses the ",
-                a("DfE's MP Lookup", href = "https://github.com/dfe-analytical-services/mp-lookup"),
+                a(
+                  "DfE's MP Lookup",
+                  href = "https://github.com/dfe-analytical-services/mp-lookup"
+                ),
                 "which updates from the ",
-                a("UK Parliament API", href = "https://data.parliament.uk/membersdataplatform/default.aspx"),
+                a(
+                  "UK Parliament API",
+                  href = "https://data.parliament.uk/membersdataplatform/default.aspx"
+                ),
                 "daily."
               ),
               div(
@@ -116,6 +124,15 @@ ui <- function(input, output, session) {
                   label = "Search"
                 )
               ),
+              uiOutput("pin_freshness"),
+              actionButton(
+                "refresh_data",
+                label = "Refresh data",
+                icon = icon("rotate"),
+                class = "btn-default btn-sm"
+              ),
+              # Confirmation shown after manual refresh click
+              uiOutput("refresh_status"),
               # TODO: Explore data download or copy to clipboard outputs
               div(
                 id = "table_output",
@@ -146,7 +163,9 @@ ui <- function(input, output, session) {
                 date_prepared = "1st July 2024",
                 date_reviewed = "1st July 2024",
                 issues_contact = "explore.statistics@education.gov.uk",
-                non_accessible_components = c("List non-accessible components here"),
+                non_accessible_components = c(
+                  "List non-accessible components here"
+                ),
                 specific_issues = c("List specific issues here")
               )
             )
