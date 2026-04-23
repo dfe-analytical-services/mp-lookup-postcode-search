@@ -1,0 +1,28 @@
+bundle:
+  name: mp-lookup-postcode-search
+
+resources:
+  jobs:
+    update_pins:
+      name: "Update MP & Postcode Pins"
+      schedule:
+        quartz_cron_expression: "0 0 8 * * ?"
+        timezone_id: "Europe/London"
+      tasks:
+        - task_key: update_postcode
+          existing_cluster_id: "0324-165928-8wjhg0qa"
+          notebook_task:
+            notebook_path: ./pipelines/update-postcode.r
+            source: WORKSPACE
+        - task_key: update_mp
+          depends_on:
+            - task_key: update_postcode
+          existing_cluster_id: "0324-165928-8wjhg0qa"
+          notebook_task:
+            notebook_path: ./pipelines/update-mp.r
+            source: WORKSPACE
+
+targets:
+  prod:
+    workspace:
+      host: https://adb-5765280079298735.15.azuredatabricks.net
