@@ -34,27 +34,3 @@ To find the job in the workspace:
 3. From there you can view run history, trigger a manual run, or inspect logs.
 
 You can also run the notebooks interactively by opening them in the Databricks notebook editor and attaching to any R-capable cluster.
-
-## Updating and redeploying the bundle
-
-The project uses [Databricks Asset Bundles (DABs)](https://docs.databricks.com/dev-tools/bundles/index.html). All job configuration lives in `databricks.yml` in the project root.
-
-### Making changes
-
-1. Edit the notebook(s) or `databricks.yml` as needed.
-2. Validate the bundle configuration:
-   ```bash
-   databricks bundle validate --target prod
-   ```
-3. Deploy to production:
-   ```bash
-   databricks bundle deploy --target prod
-   ```
-4. Optionally trigger a run to verify:
-   ```bash
-   databricks bundle run update_pins --target prod
-   ```
-
-### Cluster
-
-Both tasks use one of Cam's clusters `0324-165928-8wjhg0qa`. If the cluster ID changes, update the `existing_cluster_id` field in `databricks.yml` and redeploy.
