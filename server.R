@@ -1,36 +1,22 @@
 server <- function(input, output, session) {
-  # Cookies logic -------------------------------------------------------------
+  # --- Cookie banners ---
   output$cookies_status <- dfeshiny::cookies_banner_server(
-    input_cookies = shiny::reactive(input$cookies),
+    input_cookies = reactive(input$cookies),
     parent_session = session,
     google_analytics_key = google_analytics_key
   )
-
   dfeshiny::cookies_panel_server(
-    input_cookies = shiny::reactive(input$cookies),
+    input_cookies = reactive(input$cookies),
     google_analytics_key = google_analytics_key
   )
 
-  # ---------------------------------------------------------------------------
-  # On session start: check whether pins have changed since the process
-  # last loaded them. Uses isolate() so this runs imperatively as a
-  # one-off side effect rather than creating a reactive dependency loop.
-  # Silent from the user's perspective — they just always get current data.
-  # ---------------------------------------------------------------------------
-  isolate({
-    check_and_reload()
-  })
+  # --- Data freshness: check pins on session start ---
+  isolate(check_and_reload())
 
-  # ---------------------------------------------------------------------------
-  # Manual refresh: same check_and_reload(), result surfaced to the user.
-  # ---------------------------------------------------------------------------
-  refresh_result <- eventReactive(input$refresh_data, {
-    check_and_reload()
-  })
-
+  # --- Manual refresh button ---
+  refresh_result <- eventReactive(input$refresh_data, check_and_reload())
   output$refresh_status <- renderUI({
-    req(input$refresh_data > 0) # nothing shown before first click
-
+    req(input$refresh_data > 0)
     if (refresh_result()) {
       div(
         class = "alert alert-success",
@@ -48,18 +34,11 @@ server <- function(input, output, session) {
     }
   })
 
-  # ------------------------------------------------------------------
-  # Lookup reactive — reads postcode_rv() and constituency_rv() so it
-  # automatically uses the latest data after any reload, without needing
-  # to re-run the postcode query itself.
-  # ------------------------------------------------------------------
-  # TODO: merge with the original code below
+  # --- Postcode lookup logic ---
   lookup_result <- eventReactive(input$postcode_search, {
     req(nchar(trimws(input$postcode)) > 0)
-
     pc <- normalise_postcode(input$postcode)
     code <- postcode_rv()[[pc]]
-
     if (is.null(code) || is.na(code)) {
       return(list(
         status = "not_found",
@@ -68,9 +47,7 @@ server <- function(input, output, session) {
         data = NULL
       ))
     }
-
     rows <- constituency_rv()[.(code), nomatch = NULL]
-
     if (nrow(rows) == 0L) {
       return(list(
         status = "code_missing",
@@ -79,17 +56,13 @@ server <- function(input, output, session) {
         data = NULL
       ))
     }
-
-    list(
-      status = "found",
-      postcode = pc,
-      codes = code,
-      data = rows
-    )
+    list(status = "found", postcode = pc, codes = code, data = rows)
   })
 
+  # --- Input validation ---
   observeEvent(input$postcode_search, {
-    if (input$postcode_text %in% postcode_input_list) {
+    # Could add a more robust validation here if needed
+    if (nchar(normalise_postcode(input$postcode_text)) >= 5) {
       shinyGovstyle::error_off(inputId = "postcode_text")
     } else {
       shinyGovstyle::error_on(
@@ -99,8 +72,8 @@ server <- function(input, output, session) {
     }
   })
 
+  # --- MP info table ---
   mp_data <- read_mp_data()
-
   output$mpinfo <- renderGovReactable({
     res <- lookup_result()
     table <- res$data |>
@@ -114,24 +87,16 @@ server <- function(input, output, session) {
         Constituency = pcon_name
       ) |>
       select(-c("pcon_code", "member_id"))
-
     shinyGovstyle::govReactable(table)
   }) |>
-    shiny::bindCache(input$postcode_text) |>
-    shiny::bindEvent(input$postcode_search)
+    bindCache(input$postcode_text) |>
+    bindEvent(input$postcode_search)
 
-  # ------------------------------------------------------------------
-  # Freshness panel
-  # Takes a reactive dependency on loaded_hashes() so it re-renders
-  # automatically whenever a reload updates what is in memory, reflecting
-  # the timestamps of the data that is actually being served right now.
-  # ------------------------------------------------------------------
+  # --- Data freshness panel ---
   output$pin_freshness <- renderUI({
-    loaded_hashes() # reactive dependency — re-renders on any reload
-
+    loaded_hashes()
     pc_meta <- pin_meta(board, "postcode_lookup")
     con_meta <- pin_meta(board, "constituency_data")
-
     tagList(
       tags$small(
         tags$b("Data in memory"),
@@ -149,21 +114,14 @@ server <- function(input, output, session) {
     )
   })
 
-  # footer links -----------------------
-  shiny::observeEvent(input$accessibility_statement, {
-    shiny::updateTabsetPanel(session, "footer_links", selected = "a11y_panel")
+  # --- Footer links ---
+  observeEvent(input$accessibility_statement, {
+    updateTabsetPanel(session, "footer_links", selected = "a11y_panel")
   })
-
-  shiny::observeEvent(input$use_of_cookies, {
-    shiny::updateTabsetPanel(
-      session,
-      "footer_links",
-      selected = "cookies_panel_ui"
-    )
+  observeEvent(input$use_of_cookies, {
+    updateTabsetPanel(session, "footer_links", selected = "cookies_panel_ui")
   })
-
-  # Return to MP lookup
-  shiny::observeEvent(input$back_to_lookup, {
-    shiny::updateTabsetPanel(session, "footer_links", selected = "mp_lookup")
+  observeEvent(input$back_to_lookup, {
+    updateTabsetPanel(session, "footer_links", selected = "mp_lookup")
   })
 }
