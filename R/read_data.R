@@ -33,12 +33,12 @@ read_postcode_data <- function(file = "data/pcd_to_pcon_lookup_may_24.csv") {
 
 # MP data -----------------------------------------------------------------
 
-read_mp_data <- function(
-    file = "https://raw.githubusercontent.com/dfe-analytical-services/mp-lookup/refs/heads/main/mp_lookup.csv") {
+read_mp_data <- function(file = "https://raw.githubusercontent.com/dfe-analytical-services/mp-lookup/refs/heads/main/mp_lookup.csv") { # nolint
   # Use read.csv to read in data file
   mp_data <- read.csv(file)
 
   # Format data file to suitable format (select only relevant columns)
   mp_data <- mp_data |>
+    # TODO: Include geographic information
     dplyr::select(-c("election_result_summary_2024":"country_code"))
 }

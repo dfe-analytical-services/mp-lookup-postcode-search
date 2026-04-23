@@ -16,35 +16,51 @@
 #
 #    http://shiny.rstudio.com/
 #
-# TODO: Add data calls in the server script to ensure data is up to date.
-#
 # -----------------------------------------------------------------------------
 server <- function(input, output, session) {
+  # Load data -----------------------------------------------------------------
+  mp_data <- read_mp_data()
+
   # Cookies logic -------------------------------------------------------------
-  output$cookies_status <- dfeshiny::cookies_banner_server(
-    input_cookies = shiny::reactive(input$cookies),
-    parent_session = session,
-    google_analytics_key = google_analytics_key
-  )
+  observeEvent(input$cookieAccept, {
+    shinyjs::show(id = "cookieAcceptDiv")
+    shinyjs::hide(id = "cookieMain")
+  })
 
-  dfeshiny::cookies_panel_server(
-    input_cookies = shiny::reactive(input$cookies),
-    google_analytics_key = google_analytics_key
-  )
+  observeEvent(input$cookieReject, {
+    shinyjs::show(id = "cookieRejectDiv")
+    shinyjs::hide(id = "cookieMain")
+  })
 
-  # MP lookup ---------------------------------------------------------------
+  observeEvent(input$hideAccept, {
+    shinyjs::toggle(id = "cookieDiv")
+  })
+
+  observeEvent(input$hideReject, {
+    shinyjs::toggle(id = "cookieDiv")
+  })
+
+  observeEvent(input$cookieLink, {
+    shiny::updateTabsetPanel(session, "footer_links", selected = "cookies_panel_ui")
+  })
+
+  # MP lookup -----------------------------------------------------------------
+  # Set table output as hidden when app first loads
+  shinyjs::hideElement(id = "table_output")
+
+  # Add error message for postcodes that do not appear in the reference list
   observeEvent(input$postcode_search, {
     if (input$postcode_text %in% postcode_input_list) {
       shinyGovstyle::error_off(inputId = "postcode_text")
+      shinyjs::showElement(id = "table_output")
     } else {
       shinyGovstyle::error_on(
         inputId = "postcode_text",
-        error_message = "Please ensure postcode is in the format AB12 3CD."
+        error_message = "Postcode not found. Enter a full UK postcode."
       )
+      shinyjs::hideElement(id = "table_output")
     }
   })
-
-  mp_data <- read_mp_data()
 
   output$mpinfo <- renderGovReactable({
     shinyGovstyle::govReactable(
@@ -71,30 +87,6 @@ server <- function(input, output, session) {
 
   shiny::observeEvent(input$use_of_cookies, {
     shiny::updateTabsetPanel(session, "footer_links", selected = "cookies_panel_ui")
-  })
-
-  shiny::observeEvent(input$privacy_notice, {
-    showModal(modalDialog(
-      external_link("https://www.gov.uk/government/organisations/department-for-education/about/personal-information-charter", # nolint
-        "Privacy notice",
-        add_warning = FALSE
-      ),
-      easyClose = TRUE,
-      footer = NULL
-    ))
-
-    # JavaScript to auto-click the link and close the modal
-    shinyjs::runjs("
-      setTimeout(function() {
-        var link = document.querySelector('.modal a');
-        if (link) {
-          link.click();
-          setTimeout(function() {
-            $('.modal').modal('hide');
-          }, 20); // Extra delay to avoid any race conditions
-        }
-      }, 400);
-    ")
   })
 
   # Return to MP lookup

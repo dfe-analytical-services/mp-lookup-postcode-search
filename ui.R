@@ -51,10 +51,7 @@ ui <- function(input, output, session) {
 
     # Cookies -----------------------------------------------------------------
     # Setting up cookie consent based on a cookie recording the consent:
-    dfeshiny::dfe_cookies_script(),
-    dfeshiny::cookies_banner_ui(
-      name = "Department for Education (DfE) MP lookup"
-    ),
+    shinyGovstyle::cookieBanner("Department for Education (DfE) MP lookup"),
 
     # Skip_to_main -------------------------------------------------------------
     # Add a 'Skip to main content' link for keyboard users to bypass navigation.
@@ -68,7 +65,7 @@ ui <- function(input, output, session) {
     shinyGovstyle::full_width_overrides(),
     shinyGovstyle::header(
       org_name = "Department for Education (DfE)",
-      service_name = "Department for Education (DfE) MP lookup"
+      service_name = "Postcode MP lookup"
     ),
 
     # Beta banner -------------------------------------------------------------
@@ -90,18 +87,24 @@ ui <- function(input, output, session) {
       shiny::tabPanel(
         value = "mp_lookup",
         "MP lookup",
-        gov_main_layout(
-          gov_row(
+        shinyGovstyle::gov_main_layout(
+          shinyGovstyle::gov_row(
             column(
               10,
-              h1("MP Lookup"),
-              p("Please search a postcode to retrieve up-to-date MP information for that area."),
-              p(
+              shinyGovstyle::heading_text("MP Lookup"),
+              shinyGovstyle::gov_text(
+                "Please search a postcode to retrieve up-to-date MP information for that area."
+              ),
+              shinyGovstyle::gov_text(
                 "This tool uses the ",
-                a("DfE's MP Lookup", href = "https://github.com/dfe-analytical-services/mp-lookup"),
-                "which updates from the ",
-                a("UK Parliament API", href = "https://data.parliament.uk/membersdataplatform/default.aspx"),
-                "daily."
+                shinyGovstyle::external_link(
+                  href = "https://github.com/dfe-analytical-services/mp-lookup", "DfE's MP Lookup"
+                ),
+                " which updates from the ",
+                shinyGovstyle::external_link(
+                  href = "https://data.parliament.uk/membersdataplatform/default.aspx", "UK Parliament API"
+                ),
+                " daily."
               ),
               div(
                 shinyGovstyle::text_Input(
@@ -121,6 +124,7 @@ ui <- function(input, output, session) {
                 id = "table_output",
                 govReactableOutput(
                   "mpinfo",
+                  # TODO: Make caption reactive
                   caption = "MP information for chosen postcode.",
                   caption_size = "s"
                 )
@@ -135,7 +139,7 @@ ui <- function(input, output, session) {
         value = "a11y_panel",
         "Accessibility",
         shinyGovstyle::gov_main_layout(
-          gov_row(
+          shinyGovstyle::gov_row(
             column(
               10,
               shinyGovstyle::backlink_Input("back_to_lookup"),
@@ -159,7 +163,7 @@ ui <- function(input, output, session) {
         value = "cookies_panel_ui",
         "Cookies",
         shinyGovstyle::gov_main_layout(
-          gov_row(
+          shinyGovstyle::gov_row(
             column(
               10,
               shinyGovstyle::backlink_Input("back_to_lookup"),
@@ -176,7 +180,7 @@ ui <- function(input, output, session) {
       links = c(
         "Accessibility statement",
         "Use of cookies",
-        "Privacy notice"
+        "Privacy notice" = "https://www.gov.uk/government/organisations/department-for-education/about/personal-information-charter" # nolint
       )
     )
   )
