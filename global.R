@@ -1,7 +1,3 @@
-# -----------------------------------------------------------------------------
-# GLOBALS: Libraries, constants, data loading, helpers
-# -----------------------------------------------------------------------------
-
 shhh <- suppressPackageStartupMessages
 
 # Core packages
@@ -25,9 +21,6 @@ shhh(library(dplyr))
 shhh(library(shinyjs))
 shhh(library(tools))
 shhh(library(shinytitle))
-shhh(library(xfun))
-shhh(library(metathis))
-shhh(library(shinyalert))
 
 # Test/CI-only dependencies (not loaded in app)
 if (FALSE) {

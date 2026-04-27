@@ -26,17 +26,6 @@ ui <- function(input, output, session) {
     use_shiny_title(),
     useShinyjs(),
     tags$html(lang = "en"),
-    # Add meta description for search engines
-    meta() |>
-      meta_general(
-        application_name = "Department for Education (DfE) Shiny MP lookup",
-        description = "Department for Education (DfE) MP lookup",
-        robots = "index,follow",
-        generator = "R-Shiny",
-        subject = "stats development",
-        rating = "General",
-        referrer = "no-referrer"
-      ),
 
     # Custom disconnect function ----------------------------------------------
     # Variables used here are set in the global.R file

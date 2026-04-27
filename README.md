@@ -28,24 +28,25 @@ The following requirements are necessary for running the application yourself or
 
 To contribute to the repo you will need to be given access to create new branches, commit and push / pull, contact explore.statistics@education.gov.uk for this.
 
-There are no other access requirements as all data is available in the repository
+Data is stored in a [Pins](https://pins.rstudio.com/) board on a databricks volume, to access this (and run the app) locally you will need to set the following variables locally:
+- DATABRICKS_HOST
+- DATABRICKS_TOKEN
 
-## How to use
+[usethis](https://usethis.r-lib.org/) provides the `usethis::edit_r_environ()` funciton that gives a handy way to set you local environment variables for R. More guidance on finding your HOST and TOKEN from databricks can be found on the [internal POSITCONNECT guidance](https://rsconnect/rsc/posit-connect-guidance/_book/databricks-connections.html).
 
-This R Shiny app is currently still under development.
+Note that a SQL Warehouse is not required - Pins effectively works via an API, so just having the host and token set is sufficient for the connection to be made.
 
-The intention is for users to be able to search postcodes in the app, once deployed, to retrieve up-to-date MP information for the chosen location.
-
-### Running the app locally
+## Running the app locally
 
 1. Clone or download the repo. 
 
-2. Open the R project in R Studio.
+2. Open the folder in Positron / R Studio.
 
-3. Run `renv::restore()` to install dependencies.
+3. Set up your environment variables (DATABRICKS_HOST / DATABRICKS_TOKEN).
 
-4. Run `shiny::runApp()` to run the app locally.
+4. Run `renv::restore()` to install dependencies.
 
+5. Run `shiny::runApp()` to run the app.
 
 ### Packages
 
@@ -55,11 +56,7 @@ Whenever you add new packages, make sure to use `renv::snapshot()` to record the
 
 ### Tests
 
-Automated tests have been created using shinytest2 that test the app loads and also give other examples of ways you can use tests. You should edit the tests as you add new features into the app and continue to add and maintain the tests over time.
-
-GitHub Actions provide CI by running the automated tests and checks for code styling on every pull request into the main branch. The yaml files for these workflows can be found in the .github/workflows folder.
-
-You should run `shinytest2::test_app()` regularly to check that the tests are passing against the code you are working on.
+You should run `shinytest2::test_app()` regularly to check that the tests are passing against the code you are working on. The tests are not currently running on GitHub Actions as they need access to the data, which can only happen from internal servers. In future we should make local test data available for tests to use so we can add GitHub actions runs of the automated tests back to this project.
 
 ## How to contribute
 
@@ -67,14 +64,10 @@ If you spot a bug or feature you want to report, please check first that it has 
 
 If no issue is open for your bug or feature, please [open a new one](https://github.com/dfe-analytical-services/mp-lookup-postcode-search/issues/new)
 
-Please use the templates provided to ensure that there is sufficient detail in your reported issue.
-
 ### Making suggestions
 
 You can also use the "Issues" tab in GitHub to suggest new features, changes or additions. Include as much detail on why you're making the suggestion and any thinking towards a solution that you have already done.
 
----
-
 ## Contact
 
-The best way to get in contact would be to [rasie and issue](https://github.com/dfe-analytical-services/mp-lookup-postcode-search/issues) on this repository.
+The best way to get in contact would be to [raise an issue](https://github.com/dfe-analytical-services/mp-lookup-postcode-search/issues) on this repository.
