@@ -21,16 +21,16 @@
 ui <- function(input, output, session) {
   bslib::page_fluid(
     # Set application metadata ------------------------------------------------
-    tags$head(HTML("<title>Department for Education (DfE) Shiny Template</title>")),
+    tags$head(HTML("<title>Department for Education (DfE) MP lookup</title>")),
     tags$head(tags$link(rel = "shortcut icon", href = "dfefavicon.png")),
     use_shiny_title(),
     useShinyjs(),
     tags$html(lang = "en"),
     # Add meta description for search engines
-    meta() %>%
+    meta() |>
       meta_general(
-        application_name = "Department for Education (DfE) Shiny Template",
-        description = "Department for Education (DfE) Shiny Template",
+        application_name = "Department for Education (DfE) Shiny MP lookup",
+        description = "Department for Education (DfE) MP lookup",
         robots = "index,follow",
         generator = "R-Shiny",
         subject = "stats development",
@@ -51,10 +51,7 @@ ui <- function(input, output, session) {
 
     # Cookies -----------------------------------------------------------------
     # Setting up cookie consent based on a cookie recording the consent:
-    dfeshiny::dfe_cookies_script(),
-    dfeshiny::cookies_banner_ui(
-      name = "Department for Education (DfE) Shiny Template"
-    ),
+    shinyGovstyle::cookieBanner("Department for Education (DfE) MP lookup"),
 
     # Skip_to_main -------------------------------------------------------------
     # Add a 'Skip to main content' link for keyboard users to bypass navigation.
@@ -63,61 +60,116 @@ ui <- function(input, output, session) {
 
     # Google analytics --------------------------------------------------------
     tags$head(includeHTML(("google-analytics.html"))),
-    tags$head(
-      tags$link(
-        rel = "stylesheet",
-        type = "text/css",
-        href = "dfe_shiny_gov_style.css"
-      )
-    ),
 
     # Header ------------------------------------------------------------------
-    dfeshiny::header(
-      header = "Department for Education (DfE) Shiny Template"
+    shinyGovstyle::full_width_overrides(),
+    shinyGovstyle::header(
+      org_name = "Department for Education (DfE)",
+      service_name = "Postcode MP lookup"
     ),
 
     # Beta banner -------------------------------------------------------------
     shinyGovstyle::banner(
       "beta banner",
       "Beta",
-      "This dashboard is in beta phase and we are still reviewing performance and reliability."
+      "This dashboard is in beta phase and we are still reviewing performance and reliability.
+      If you have any questions or feedback, please contact
+      <a href='mailto:HoP.statistics@education.gov.uk'>HoP.statistics@education.gov.uk</a>."
     ),
 
-    # Nav panels --------------------------------------------------------------
-    shiny::navlistPanel(
-      "",
-      id = "navlistPanel",
-      widths = c(2, 8),
-      well = FALSE,
-      # Content for these panels is defined in the R/ui_panels/ folder
-      example_tab_1_panel(),
-      user_guide_panel(),
+    # Tab panels --------------------------------------------------------------
+    shiny::tabsetPanel(
+      id = "footer_links",
+      selected = "mp_lookup",
+      type = "hidden",
+
+      # MP lookup page
+      shiny::tabPanel(
+        value = "mp_lookup",
+        "MP lookup",
+        shinyGovstyle::gov_main_layout(
+          shinyGovstyle::gov_row(
+            column(
+              10,
+              shinyGovstyle::heading_text("MP Lookup"),
+              shinyGovstyle::gov_text(
+                "Please search a postcode to retrieve up-to-date MP information for that area."
+              ),
+              shinyGovstyle::gov_text(
+                "This tool uses the ",
+                shinyGovstyle::external_link(
+                  href = "https://github.com/dfe-analytical-services/mp-lookup", "DfE's MP Lookup"
+                ),
+                " which updates from the ",
+                shinyGovstyle::external_link(
+                  href = "https://data.parliament.uk/membersdataplatform/default.aspx", "UK Parliament API"
+                ),
+                " daily."
+              ),
+              div(
+                shinyGovstyle::text_Input(
+                  inputId = "postcode_text",
+                  label = "Enter a postcode",
+                  hint_label = "Please enter a valid UK postcode",
+                  width = 5,
+                  error = TRUE
+                ),
+                shinyGovstyle::button_Input(
+                  inputId = "postcode_search",
+                  label = "Search"
+                )
+              ),
+              # TODO: Explore data download or copy to clipboard outputs
+              div(
+                id = "table_output",
+                govReactableOutput(
+                  "mpinfo",
+                  # TODO: Make caption reactive
+                  caption = "MP information for chosen postcode.",
+                  caption_size = "s"
+                )
+              )
+            )
+          )
+        )
+      ),
+
+      # Accessibility page
       shiny::tabPanel(
         value = "a11y_panel",
         "Accessibility",
-        dfeshiny::a11y_panel(
-          dashboard_title = site_title,
-          dashboard_url = site_primary,
-          date_tested = "12th March 2024",
-          date_prepared = "1st July 2024",
-          date_reviewed = "1st July 2024",
-          issues_contact = "explore.statistics@education.gov.uk",
-          non_accessible_components = c("List non-accessible components here"),
-          specific_issues = c("List specific issues here")
+        shinyGovstyle::gov_main_layout(
+          shinyGovstyle::gov_row(
+            column(
+              10,
+              shinyGovstyle::backlink_Input("back_to_lookup"),
+              dfeshiny::a11y_panel(
+                dashboard_title = site_title,
+                dashboard_url = site_primary,
+                date_tested = "12th March 2024",
+                date_prepared = "1st July 2024",
+                date_reviewed = "1st July 2024",
+                issues_contact = "explore.statistics@education.gov.uk",
+                non_accessible_components = c("List non-accessible components here"),
+                specific_issues = c("List specific issues here")
+              )
+            )
+          )
         )
       ),
+
+      # Cookies page
       shiny::tabPanel(
         value = "cookies_panel_ui",
         "Cookies",
-        cookies_panel_ui(google_analytics_key = google_analytics_key)
-      ),
-      shiny::tabPanel(
-        value = "support_panel_ui",
-        "Support and feedback",
-        support_panel(
-          team_email = "explore.statistics@education.gov.uk",
-          repo_name = "https://github.com/dfe-analytical-services/shiny-template",
-          form_url = "https://forms.office.com"
+        shinyGovstyle::gov_main_layout(
+          shinyGovstyle::gov_row(
+            column(
+              10,
+              shinyGovstyle::backlink_Input("back_to_lookup"),
+              cookies_panel_ui(google_analytics_key = google_analytics_key)
+            )
+          )
         )
       )
     ),
@@ -128,9 +180,7 @@ ui <- function(input, output, session) {
       links = c(
         "Accessibility statement",
         "Use of cookies",
-        "Support and feedback",
-        "Privacy notice",
-        "External link"
+        "Privacy notice" = "https://www.gov.uk/government/organisations/department-for-education/about/personal-information-charter" # nolint
       )
     )
   )

@@ -6,36 +6,39 @@
 # publication date. You should use dummy data or already-published data during
 # development of your dashboard.
 #
-# In order to help prevent unpublished data being accidentally published, the
-# template will not let you make a commit if there are unidentified csv, xlsx,
-# tex or pdf files contained in your repository. To make a commit, you will need
-# to either add the file to .gitignore or add an entry for the file into
-# datafiles_log.csv.
 # -----------------------------------------------------------------------------
 
-# Revenue data ----------------------------------------------------------------
-read_revenue_data <- function(file = "data/la_maintained_schools_revenue_reserve_final.csv") {
-  # This reads in an example file. For the purposes of this demo, we're using
-  # the LA expenditure data downloaded from an EES release
-  df_revenue <- read.csv(file)
+# Post code data ----------------------------------------------------------
 
-  df_revenue <- df_revenue %>% mutate(
-    # Convert 6 digit year to 4 digit for end year
-    year = as.numeric(paste0("20", substr(format(time_period), 5, 6))),
+# TODO: Explore what geography data HoC use in their MP information tool
+# TODO: Explore databricks postcode data, brought in by API.
+read_postcode_data <- function(file = "data/pcd_to_pcon_lookup_may_24.csv") {
+  # Read file
+  postcode_data <- read.csv(file)
 
-    # Create a flat column listing all locations
-    area_name = case_when(
-      geographic_level == "National" ~ country_name,
-      geographic_level == "Regional" ~ region_name,
-      .default = la_name
+  # Format data
+  postcode_data <- postcode_data |>
+    mutate(
+      # Remove ALL whitespace from postcode
+      pcd = gsub("\\s+", "", pcd),
+
+      # Then reinsert a space before the last 3 characters (standard UK format)
+      pcd = sub("(.{3})$", " \\1", pcd)
+    ) |>
+    rename(
+      Postcode  = pcd,
+      pcon_code = pconcd
     )
-  )
-  return(df_revenue)
 }
 
-# Upper Tier data ----------------------------------------------------------------
+# MP data -----------------------------------------------------------------
 
-read_upper_tier_data <- function(file = "data/Local_Authority_Districts_All_simplified.geojson") {
-  df_upper_tier <- sf::read_sf(file)
-  return(df_upper_tier)
+read_mp_data <- function(file = "https://raw.githubusercontent.com/dfe-analytical-services/mp-lookup/refs/heads/main/mp_lookup.csv") { # nolint
+  # Use read.csv to read in data file
+  mp_data <- read.csv(file)
+
+  # Format data file to suitable format (select only relevant columns)
+  mp_data <- mp_data |>
+    # TODO: Include geographic information
+    dplyr::select(-c("election_result_summary_2024":"country_code"))
 }

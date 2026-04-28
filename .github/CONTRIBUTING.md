@@ -4,9 +4,9 @@ Thank you for looking to contribute to our project! The following document outli
 
 ## Reporting bugs or features
 
-If you spot a bug or feature you want to report, please check first that it has not been reported as an [issue](https://github.com/dfe-analytical-services/shiny-template/issues) already.
+If you spot a bug or feature you want to report, please check first that it has not been reported as an [issue](https://github.com/dfe-analytical-services/mp-lookup-postcode-search/issues) already.
 
-If no issue is open for your bug or feature, please [open a new one](https://github.com/dfe-analytical-services/shiny-template/issues/new)
+If no issue is open for your bug or feature, please [open a new one](https://github.com/dfe-analytical-services/mp-lookup-postcode-search/issues/new)
 
 Please use the templates provided to ensure that there is sufficient detail in your reported issue.
 
