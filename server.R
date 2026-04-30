@@ -64,11 +64,13 @@ server <- function(input, output, session) {
     # Could add a more robust validation here if needed
     if (nchar(normalise_postcode(input$postcode_text)) >= 5) {
       shinyGovstyle::error_off(inputId = "postcode_text")
+      shinyjs::showElement(id = "table_output")
     } else {
       shinyGovstyle::error_on(
         inputId = "postcode_text",
-        error_message = "Please ensure postcode is in the format AB12 3CD."
+        error_message = "Postcode not found. Enter a full UK postcode."
       )
+      shinyjs::hideElement(id = "table_output")
     }
   })
 
