@@ -39,20 +39,20 @@ google_analytics_key <- "Z967JJVQQX"
 
 # ---- Data pins ----
 BOARD_PATH <- "/Volumes/catalog_40_copper_statistics_services/postcode_mp/pins"
-board <- board_databricks(
+board <- pins::board_databricks(
   folder_url = BOARD_PATH,
   versioned = TRUE,
   cache = NULL
 )
 
 load_postcode_lookup <- function() {
-  tbl <- pin_download(board, "postcode_lookup") |> read_parquet()
+  tbl <- pins::pin_download(board, "postcode_lookup") |> arrow::read_parquet()
   setNames(tbl$pcon_code, tbl$postcode)
 }
 
 load_constituency_dt <- function() {
-  dt <- pin_download(board, "constituency_data") |>
-    read_parquet() |>
+  dt <- pins::pin_download(board, "constituency_data") |>
+    arrow::read_parquet() |>
     as.data.table()
   setkey(dt, pcon_code)
   dt
@@ -63,8 +63,8 @@ message("Loading pins into memory...")
 postcode_rv <- reactiveVal(load_postcode_lookup())
 constituency_rv <- reactiveVal(load_constituency_dt())
 loaded_hashes <- reactiveVal(c(
-  postcode = pin_meta(board, "postcode_lookup")$pin_hash,
-  constituency = pin_meta(board, "constituency_data")$pin_hash
+  postcode = pins::pin_meta(board, "postcode_lookup")$pin_hash,
+  constituency = pins::pin_meta(board, "constituency_data")$pin_hash
 ))
 message("Pins loaded. App ready.")
 
@@ -72,8 +72,8 @@ message("Pins loaded. App ready.")
 normalise_postcode <- function(x) toupper(gsub("\\s+", "", trimws(x)))
 
 check_and_reload <- function() {
-  current_pc_hash <- pin_meta(board, "postcode_lookup")$pin_hash
-  current_con_hash <- pin_meta(board, "constituency_data")$pin_hash
+  current_pc_hash <- pins::pin_meta(board, "postcode_lookup")$pin_hash
+  current_con_hash <- pins::pin_meta(board, "constituency_data")$pin_hash
   hashes <- loaded_hashes()
   reloaded <- FALSE
   if (!identical(current_pc_hash, hashes[["postcode"]])) {

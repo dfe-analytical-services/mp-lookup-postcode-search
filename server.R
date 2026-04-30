@@ -73,8 +73,8 @@ server <- function(input, output, session) {
   })
 
   # --- MP info table ---
-  mp_data <- read_mp_data()
   output$mpinfo <- renderGovReactable({
+    mp_data <- constituency_rv()
     res <- lookup_result()
     table <- res$data |>
       dplyr::filter(Postcode == paste(input$postcode_text)) |>
@@ -95,7 +95,7 @@ server <- function(input, output, session) {
   # --- Data freshness panel ---
   output$pin_freshness <- renderUI({
     loaded_hashes()
-    pc_meta <- pin_meta(board, "postcode_lookup")
+    pc_meta <- pins::pin_meta(board, "postcode_lookup")
     con_meta <- pin_meta(board, "constituency_data")
     tagList(
       tags$small(
