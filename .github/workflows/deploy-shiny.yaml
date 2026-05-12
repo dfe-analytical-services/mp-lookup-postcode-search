@@ -3,8 +3,6 @@ on:
   push:
     branches:
       - main
-      
-name: shinyapps.io deploy
 
 jobs:
   deployShiny:
