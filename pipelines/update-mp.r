@@ -3,7 +3,7 @@
 # MAGIC %md
 # MAGIC # Update MP information
 # MAGIC
-# MAGIC Takes from https://github.com/dfe-analytical-services/mp-lookup/blob/main/mp_lookup.csv and then writes the latest to a `pin`, which is stored in a Volume, ready for reading by the app. 
+# MAGIC Takes from https://github.com/dfe-analytical-services/mp-lookup/blob/main/mp_lookup.csv and then writes the latest to a `pin`, which is stored in a Volume, ready for reading by the app.
 # MAGIC
 # MAGIC ## Change detection strategy
 # MAGIC
@@ -26,8 +26,8 @@ to_install <- extra_pkgs[!vapply(extra_pkgs, requireNamespace, logical(1), quiet
 if (length(to_install) > 0) install.packages(to_install)
 safe_library(extra_pkgs)
 
-GITHUB_RAW_URL   <- "https://raw.githubusercontent.com/dfe-analytical-services/mp-lookup/refs/heads/main/mp_lookup.csv"
-GITHUB_API_URL   <- "https://api.github.com/repos/dfe-analytical-services/mp-lookup/commits?path=mp_lookup.csv&per_page=1"
+GITHUB_RAW_URL <- "https://raw.githubusercontent.com/dfe-analytical-services/mp-lookup/refs/heads/main/mp_lookup.csv"
+GITHUB_API_URL <- "https://api.github.com/repos/dfe-analytical-services/mp-lookup/commits?path=mp_lookup.csv&per_page=1"
 PIN_CONSTITUENCY <- "constituency_data"
 
 # COMMAND ----------
@@ -51,7 +51,6 @@ pinned_commit_sha <- read_pin_meta_field(board, PIN_CONSTITUENCY, "github_commit
 message("Pinned  GitHub commit SHA: ", pinned_commit_sha %||% "<none>")
 
 if (is.null(pinned_commit_sha) || latest_commit_sha != pinned_commit_sha) {
-
   message("\u2192 Commit SHA changed (or pin is new). Downloading CSV...")
 
   # Download the full CSV
@@ -66,11 +65,8 @@ if (is.null(pinned_commit_sha) || latest_commit_sha != pinned_commit_sha) {
   pinned_content_hash <- read_pin_meta_field(board, PIN_CONSTITUENCY, "content_hash")
 
   if (!is.null(pinned_content_hash) && content_hash == pinned_content_hash) {
-
     message("\u2713 Content unchanged despite new commit SHA. Skipping re-pin.")
-
   } else {
-
     constituency_df <- arrow::read_csv_arrow(charToRaw(raw_csv))
 
     # Sort by primary key for fast in-app lookup
@@ -78,12 +74,12 @@ if (is.null(pinned_commit_sha) || latest_commit_sha != pinned_commit_sha) {
 
     # Validate, write to parquet, and pin (with temp-file cleanup)
     pin_parquet(
-      board         = board,
-      df            = constituency_df,
-      pin_name      = PIN_CONSTITUENCY,
-      title         = "Constituency reference data",
-      description   = glue::glue("Commit {substr(latest_commit_sha, 1, 7)}, pinned at {Sys.time()}"),
-      metadata      = list(
+      board = board,
+      df = constituency_df,
+      pin_name = PIN_CONSTITUENCY,
+      title = "Constituency reference data",
+      description = glue::glue("Commit {substr(latest_commit_sha, 1, 7)}, pinned at {Sys.time()}"),
+      metadata = list(
         github_commit_sha = latest_commit_sha,
         content_hash      = content_hash
       ),
@@ -92,7 +88,6 @@ if (is.null(pinned_commit_sha) || latest_commit_sha != pinned_commit_sha) {
 
     message("\u2713 constituency_data updated to commit ", substr(latest_commit_sha, 1, 7))
   }
-
 } else {
   message("\u2713 constituency_data is current. Skipping re-pin.")
 }
