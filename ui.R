@@ -1,28 +1,11 @@
-# -----------------------------------------------------------------------------
-# This is the ui file. Use it to call elements created in your server file into
-# the app, and define where they are placed, and define any user inputs.
-#
-# Other elements like charts, navigation bars etc. are completely up to you to
-# decide what goes in. However, every element should meet accessibility
-# requirements and user needs.
-#
-# This is the user-interface definition of a Shiny web application. You can
-# run the application by clicking 'Run App' above.
-#
-# Find out more about building applications with Shiny here:
-#
-#    http://shiny.rstudio.com/
-#
-# The documentation for GOV.UK components can be found at:
-#
-#    https://github.com/moj-analytical-services/shinyGovstyle
-#
-# -----------------------------------------------------------------------------
 ui <- function(input, output, session) {
   bslib::page_fluid(
     # Set application metadata ------------------------------------------------
-    tags$head(HTML("<title>Department for Education (DfE) MP lookup</title>")),
-    tags$head(tags$link(rel = "shortcut icon", href = "dfefavicon.png")),
+    tags$head(
+      HTML("<title>Department for Education (DfE) MP lookup</title>"),
+      tags$link(rel = "shortcut icon", href = "dfefavicon.png"),
+      includeHTML("google-analytics.html")
+    ),
     use_shiny_title(),
     useShinyjs(),
     tags$html(lang = "en"),
@@ -35,9 +18,6 @@ ui <- function(input, output, session) {
       publication_link = parent_publication
     ),
 
-    # Load javascript dependencies --------------------------------------------
-    shinyjs::useShinyjs(),
-
     # Cookies -----------------------------------------------------------------
     # Setting up cookie consent based on a cookie recording the consent:
     shinyGovstyle::cookieBanner("Department for Education (DfE) MP lookup"),
@@ -46,9 +26,6 @@ ui <- function(input, output, session) {
     # Add a 'Skip to main content' link for keyboard users to bypass navigation.
     # It stays hidden unless focussed via tabbing.
     shinyGovstyle::skip_to_main(),
-
-    # Google analytics --------------------------------------------------------
-    tags$head(includeHTML(("google-analytics.html"))),
 
     # Header ------------------------------------------------------------------
     shinyGovstyle::full_width_overrides(),
@@ -103,7 +80,7 @@ ui <- function(input, output, session) {
                   label = "Enter a postcode",
                   hint_label = "Please enter a valid UK postcode",
                   width = 5,
-                  error = TRUE
+                  error = FALSE
                 ),
                 shinyGovstyle::button_Input(
                   inputId = "postcode_search",

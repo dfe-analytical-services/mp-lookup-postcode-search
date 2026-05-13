@@ -22,7 +22,9 @@ shhh(library(shinyjs))
 shhh(library(tools))
 shhh(library(shinytitle))
 
-# Test/CI-only dependencies (not loaded in app)
+# Test/CI-only dependencies (not loaded in app).
+# Listed here so `renv::snapshot()` picks them up as project deps; the
+# `if (FALSE)` ensures they are never actually loaded at app startup.
 if (FALSE) {
   shhh(library(shinytest2))
   shhh(library(chromote))
@@ -38,9 +40,8 @@ sites_list <- c(site_primary)
 google_analytics_key <- "Z967JJVQQX"
 
 # ---- Data pins ----
-BOARD_PATH <- "/Volumes/catalog_40_copper_statistics_services/postcode_mp/pins"
 board <- pins::board_databricks(
-  folder_url = BOARD_PATH,
+  folder_url = "/Volumes/catalog_40_copper_statistics_services/postcode_mp/pins",
   versioned = TRUE,
   cache = NULL
 )

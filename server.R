@@ -13,95 +13,106 @@ server <- function(input, output, session) {
   # --- Data freshness: check pins on session start ---
   isolate(check_and_reload())
 
+  # --- App state ---
+  state <- reactiveValues(
+    status = "idle", # "idle" | "found" | "not_found"
+    postcode = NA_character_, # normalised postcode the user searched
+    row = NULL, # one-row data.frame to render, or NULL
+    refresh_msg = NULL # "reloaded" | "uptodate" | NULL
+  )
+
   # --- Manual refresh button ---
-  refresh_result <- eventReactive(input$refresh_data, check_and_reload())
+  observeEvent(input$refresh_data, {
+    reloaded <- check_and_reload()
+    state$refresh_msg <- if (reloaded) "reloaded" else "uptodate"
+  })
+
   output$refresh_status <- renderUI({
-    req(input$refresh_data > 0)
-    if (refresh_result()) {
-      div(
-        class = "alert alert-success",
-        style = "margin-top:8px; padding:6px 10px; font-size:0.85em;",
-        icon("circle-check"),
-        " Data reloaded."
+    req(state$refresh_msg)
+    variant <- switch(state$refresh_msg,
+      reloaded = list(
+        class = "alert-success",
+        icon = "circle-check",
+        text = " Data reloaded."
+      ),
+      uptodate = list(
+        class = "alert-info",
+        icon = "circle-info",
+        text = " Already up to date."
       )
-    } else {
-      div(
-        class = "alert alert-info",
-        style = "margin-top:8px; padding:6px 10px; font-size:0.85em;",
-        icon("circle-info"),
-        " Already up to date."
-      )
-    }
+    )
+    div(
+      class = paste("alert", variant$class),
+      style = "margin-top:8px; padding:6px 10px; font-size:0.85em;",
+      icon(variant$icon),
+      variant$text
+    )
   })
 
-  # --- Postcode lookup logic ---
-  lookup_result <- eventReactive(input$postcode_search, {
-    req(nchar(trimws(input$postcode)) > 0)
-    pc <- normalise_postcode(input$postcode)
-    code <- postcode_rv()[[pc]]
-    if (is.null(code) || is.na(code)) {
-      return(list(
-        status = "not_found",
-        postcode = pc,
-        codes = NULL,
-        data = NULL
-      ))
-    }
-    rows <- constituency_rv()[.(code), nomatch = NULL]
-    if (nrow(rows) == 0L) {
-      return(list(
-        status = "code_missing",
-        postcode = pc,
-        codes = code,
-        data = NULL
-      ))
-    }
-    list(status = "found", postcode = pc, codes = code, data = rows)
-  })
-
-  # --- Input validation ---
+  # --- Postcode search: validate + lookup in one place ---
   observeEvent(input$postcode_search, {
-    # Could add a more robust validation here if needed
-    if (nchar(normalise_postcode(input$postcode_text)) >= 5) {
-      shinyGovstyle::error_off(inputId = "postcode_text")
-      shinyjs::showElement(id = "table_output")
-    } else {
-      shinyGovstyle::error_on(
-        inputId = "postcode_text",
-        error_message = "Postcode not found. Enter a full UK postcode."
-      )
+    show_not_found <- function(pc = NA_character_, msg) {
+      state$status <- "not_found"
+      state$postcode <- pc
+      state$row <- NULL
+      shinyGovstyle::error_on(inputId = "postcode_text", error_message = msg)
       shinyjs::hideElement(id = "table_output")
     }
+
+    raw <- input$postcode_text %||% ""
+    if (nchar(trimws(raw)) == 0) {
+      return(show_not_found(msg = "Enter a full UK postcode."))
+    }
+
+    pc <- normalise_postcode(raw)
+    code <- postcode_rv()[[pc]]
+    if (is.null(code) || is.na(code)) {
+      return(show_not_found(
+        pc,
+        "Postcode not found. Enter a full UK postcode."
+      ))
+    }
+
+    rows <- constituency_rv()[.(code), nomatch = NULL]
+    if (nrow(rows) == 0L) {
+      return(show_not_found(
+        pc,
+        "Postcode not found. Enter a full UK postcode."
+      ))
+    }
+
+    rows$Postcode <- pc
+    state$status <- "found"
+    state$postcode <- pc
+    state$row <- rows
+    shinyGovstyle::error_off(inputId = "postcode_text")
+    shinyjs::showElement(id = "table_output")
   })
 
   # --- MP info table ---
   output$mpinfo <- renderGovReactable({
-    mp_data <- constituency_rv()
-    res <- lookup_result()
-    table <- res$data |>
-      dplyr::filter(Postcode == paste(input$postcode_text)) |>
-      dplyr::left_join(mp_data, by = "pcon_code") |>
+    req(state$status == "found", state$row)
+    tbl <- state$row |>
       dplyr::rename(
         Party = party_text,
         Name = display_as,
-        "Full Title" = full_title,
-        "Member Email" = member_email,
+        `Full Title` = full_title,
+        `Member Email` = member_email,
         Constituency = pcon_name
       ) |>
-      select(-c("pcon_code", "member_id"))
-    shinyGovstyle::govReactable(table)
+      dplyr::select(-dplyr::any_of(c("pcon_code", "member_id")))
+    shinyGovstyle::govReactable(tbl)
   }) |>
-    bindCache(input$postcode_text) |>
-    bindEvent(input$postcode_search)
+    bindCache(state$postcode, loaded_hashes())
 
   # --- Data freshness panel ---
   output$pin_freshness <- renderUI({
     loaded_hashes()
     pc_meta <- pins::pin_meta(board, "postcode_lookup")
-    con_meta <- pin_meta(board, "constituency_data")
+    con_meta <- pins::pin_meta(board, "constituency_data")
     tagList(
       tags$small(
-        tags$b("Data in memory"),
+        tags$b("Latest pin version"),
         br(),
         "Postcode lookup: ",
         format(pc_meta$created, "%d %b %Y %H:%M UTC"),
