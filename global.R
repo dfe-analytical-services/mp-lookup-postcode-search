@@ -65,33 +65,4 @@ load_constituency_dt <- function() {
 message("Loading pins into memory...")
 postcode_rv <- reactiveVal(load_postcode_lookup())
 constituency_rv <- reactiveVal(load_constituency_dt())
-loaded_hashes <- reactiveVal(c(
-  postcode = pins::pin_meta(board, "postcode_lookup")$pin_hash,
-  constituency = pins::pin_meta(board, "constituency_data")$pin_hash
-))
 message("Pins loaded. App ready.")
-
-# ---- Helpers ----
-check_and_reload <- function() {
-  current_pc_hash <- pins::pin_meta(board, "postcode_lookup")$pin_hash
-  current_con_hash <- pins::pin_meta(board, "constituency_data")$pin_hash
-  hashes <- loaded_hashes()
-  reloaded <- FALSE
-  if (!identical(current_pc_hash, hashes[["postcode"]])) {
-    message("postcode_lookup pin changed — reloading at ", Sys.time())
-    postcode_rv(load_postcode_lookup())
-    reloaded <- TRUE
-  }
-  if (!identical(current_con_hash, hashes[["constituency"]])) {
-    message("constituency_data pin changed — reloading at ", Sys.time())
-    constituency_rv(load_constituency_dt())
-    reloaded <- TRUE
-  }
-  if (reloaded) {
-    loaded_hashes(c(
-      postcode = current_pc_hash,
-      constituency = current_con_hash
-    ))
-  }
-  reloaded
-}

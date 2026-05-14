@@ -76,30 +76,22 @@ ui <- function(input, output, session) {
                   label = "Enter a postcode",
                   hint_label = "Please enter a valid UK postcode",
                   width = 5,
-                  error = FALSE
+                  error = TRUE
                 ),
                 shinyGovstyle::button_Input(
                   inputId = "postcode_search",
                   label = "Search"
                 )
               ),
-              uiOutput("pin_freshness"),
-              actionButton(
-                "refresh_data",
-                label = "Refresh data",
-                icon = icon("rotate"),
-                class = "btn-default btn-sm"
-              ),
-              # Confirmation shown after manual refresh click
-              uiOutput("refresh_status"),
               # TODO: Explore data download or copy to clipboard outputs
-              div(
-                id = "table_output",
-                govReactableOutput(
-                  "mpinfo",
-                  # TODO: Make caption reactive
-                  caption = "MP information for chosen postcode.",
-                  caption_size = "s"
+              shinyjs::hidden(
+                div(
+                  id = "table_output",
+                  govReactableOutput(
+                    "mpinfo",
+                    caption = "MP information for chosen postcode.",
+                    caption_size = "s"
+                  )
                 )
               )
             )
