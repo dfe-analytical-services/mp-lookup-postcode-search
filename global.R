@@ -46,9 +46,11 @@ board <- pins::board_databricks(
   cache = NULL
 )
 
+normalise_postcode <- function(x) toupper(gsub("\\s+", "", trimws(x)))
+
 load_postcode_lookup <- function() {
   tbl <- pins::pin_download(board, "postcode_lookup") |> arrow::read_parquet()
-  setNames(tbl$pcon_code, tbl$postcode)
+  setNames(tbl$pcon_code, normalise_postcode(tbl$postcode))
 }
 
 load_constituency_dt <- function() {
@@ -70,8 +72,6 @@ loaded_hashes <- reactiveVal(c(
 message("Pins loaded. App ready.")
 
 # ---- Helpers ----
-normalise_postcode <- function(x) toupper(gsub("\\s+", "", trimws(x)))
-
 check_and_reload <- function() {
   current_pc_hash <- pins::pin_meta(board, "postcode_lookup")$pin_hash
   current_con_hash <- pins::pin_meta(board, "constituency_data")$pin_hash

@@ -18,10 +18,6 @@ ui <- function(input, output, session) {
       publication_link = parent_publication
     ),
 
-    # Cookies -----------------------------------------------------------------
-    # Setting up cookie consent based on a cookie recording the consent:
-    shinyGovstyle::cookieBanner("Department for Education (DfE) MP lookup"),
-
     # Skip_to_main -------------------------------------------------------------
     # Add a 'Skip to main content' link for keyboard users to bypass navigation.
     # It stays hidden unless focussed via tabbing.
@@ -135,21 +131,6 @@ ui <- function(input, output, session) {
             )
           )
         )
-      ),
-
-      # Cookies page
-      shiny::tabPanel(
-        value = "cookies_panel_ui",
-        "Cookies",
-        shinyGovstyle::gov_main_layout(
-          shinyGovstyle::gov_row(
-            column(
-              10,
-              shinyGovstyle::backlink_Input("back_to_lookup"),
-              cookies_panel_ui(google_analytics_key = google_analytics_key)
-            )
-          )
-        )
       )
     ),
 
@@ -158,7 +139,6 @@ ui <- function(input, output, session) {
       full = TRUE,
       links = c(
         "Accessibility statement",
-        "Use of cookies",
         "Privacy notice" = "https://www.gov.uk/government/organisations/department-for-education/about/personal-information-charter" # nolint
       )
     )

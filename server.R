@@ -1,15 +1,4 @@
 server <- function(input, output, session) {
-  # --- Cookie banners ---
-  output$cookies_status <- dfeshiny::cookies_banner_server(
-    input_cookies = reactive(input$cookies),
-    parent_session = session,
-    google_analytics_key = google_analytics_key
-  )
-  dfeshiny::cookies_panel_server(
-    input_cookies = reactive(input$cookies),
-    google_analytics_key = google_analytics_key
-  )
-
   # --- Data freshness: check pins on session start ---
   isolate(check_and_reload())
 
@@ -65,13 +54,14 @@ server <- function(input, output, session) {
     }
 
     pc <- normalise_postcode(raw)
-    code <- postcode_rv()[[pc]]
-    if (is.null(code) || is.na(code)) {
+    code <- postcode_rv()[pc]
+    if (is.na(code)) {
       return(show_not_found(
         pc,
         "Postcode not found. Enter a full UK postcode."
       ))
     }
+    code <- unname(code)
 
     rows <- constituency_rv()[.(code), nomatch = NULL]
     if (nrow(rows) == 0L) {
@@ -130,9 +120,6 @@ server <- function(input, output, session) {
   # --- Footer links ---
   observeEvent(input$accessibility_statement, {
     updateTabsetPanel(session, "footer_links", selected = "a11y_panel")
-  })
-  observeEvent(input$use_of_cookies, {
-    updateTabsetPanel(session, "footer_links", selected = "cookies_panel_ui")
   })
   observeEvent(input$back_to_lookup, {
     updateTabsetPanel(session, "footer_links", selected = "mp_lookup")
