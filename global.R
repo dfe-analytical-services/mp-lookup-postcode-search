@@ -25,9 +25,6 @@ shhh(library(shinyGovstyle))
 shhh(library(htmltools))
 shhh(library(reactable))
 
-# Reading files
-shhh(library(arrow))
-
 # Data and string manipulation
 shhh(library(dplyr))
 
