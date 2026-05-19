@@ -3697,7 +3697,7 @@
       "checksum": "7b1635921c982b3c2e045d4c4ea373e4"
     },
     ".hooks/pre-commit.R": {
-      "checksum": "c7b7c5ddab90c024830a6f6f3deb4510"
+      "checksum": "a28d36798a98c45aab9b2616df06f8ac"
     },
     ".lintr": {
       "checksum": "21373c552fa1b0b8404341b9e3c127ac"
@@ -3705,17 +3705,17 @@
     ".Rbuildignore": {
       "checksum": "87ea1a829872a421170c93a82fa13ec7"
     },
-    ".RData": {
-      "checksum": "e873c2e09ecfb52e59536b738e99ecef"
-    },
     ".RDataTmp": {
       "checksum": "50df0a48e182975901614596037d627e"
     },
     ".RDataTmp1": {
       "checksum": "3251e4df45c92f7639cb27f61f876de0"
     },
+    ".RDataTmp2": {
+      "checksum": "f1964d8f11693556539d0db1cb60fce1"
+    },
     ".Rprofile": {
-      "checksum": "a94d27978823fc749375b54e0d5d5343"
+      "checksum": "44f2e08783691fd76851365c0201b2c1"
     },
     "azure-pipelines-staging.yml": {
       "checksum": "2ab9c5d984d9f4d51f7c0f288e6bb3be"
