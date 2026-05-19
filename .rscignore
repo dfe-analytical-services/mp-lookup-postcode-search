@@ -1,7 +1,8 @@
 .Rproj.user
 .Rhistory
 .RData
-.RData*
+.RDataTmp
+.RDataTmp1
+.RDataTmp2
 .Ruserdata
 README.html
-*_.new.png
