@@ -83,7 +83,10 @@ if (is.null(pinned_commit_sha) || latest_commit_sha != pinned_commit_sha) {
         github_commit_sha = latest_commit_sha,
         content_hash      = content_hash
       ),
-      expected_cols = c("pcon_code")
+      expected_cols = c(
+        "pcon_code", "pcon_name", "display_as",
+        "party_text", "full_title", "member_email"
+      )
     )
 
     message("\u2713 constituency_data updated to commit ", substr(latest_commit_sha, 1, 7))

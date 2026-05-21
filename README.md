@@ -32,7 +32,7 @@ Data is stored in a [Pins](https://pins.rstudio.com/) board on a databricks volu
 - DATABRICKS_HOST
 - DATABRICKS_TOKEN
 
-[usethis](https://usethis.r-lib.org/) provides the `usethis::edit_r_environ()` funciton that gives a handy way to set you local environment variables for R. More guidance on finding your HOST and TOKEN from databricks can be found on the [internal POSITCONNECT guidance](https://rsconnect/rsc/posit-connect-guidance/_book/databricks-connections.html).
+[usethis](https://usethis.r-lib.org/) provides the `usethis::edit_r_environ()` function that gives a handy way to set your local environment variables for R. More guidance on finding your HOST and TOKEN from databricks can be found on the [internal Posit Connect guidance](https://rsconnect/rsc/posit-connect-guidance/_book/databricks-connections.html).
 
 Note that a SQL Warehouse is not required - Pins effectively works via an API, so just having the host and token set is sufficient for the connection to be made.
 
