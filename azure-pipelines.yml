@@ -26,3 +26,7 @@ extends:
       appId: 1089
     - name: Production
       appId: 541
+    approvers: |
+      ethan.roy@education.gov.u
+      charlotte.foster@education.gov.uk
+      laura.selby@education.gov.uk
