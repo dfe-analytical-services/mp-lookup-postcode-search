@@ -50,7 +50,7 @@ server <- function(input, output, session) {
 
   # Add error message for postcodes that do not appear in the reference list
   observeEvent(input$postcode_search, {
-    if (input$postcode_text %in% postcode_input_list) {
+    if (gsub(" ", "", toupper(input$postcode_text)) %in% gsub(" ", "", postcode_input_list)) {
       shinyGovstyle::error_off(inputId = "postcode_text")
       shinyjs::showElement(id = "table_output")
     } else {
@@ -65,7 +65,9 @@ server <- function(input, output, session) {
   output$mpinfo <- renderGovReactable({
     shinyGovstyle::govReactable(
       output_table <- postcode_data |>
-        dplyr::filter(Postcode == paste(input$postcode_text)) |>
+        dplyr::filter(
+          gsub(" ", "", Postcode) == gsub(" ", "", toupper(input$postcode_text))
+        ) |>
         dplyr::left_join(mp_data, by = "pcon_code") |>
         dplyr::rename(
           Party = party_text,

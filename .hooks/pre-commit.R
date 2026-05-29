@@ -34,4 +34,17 @@ if (any(style_output)) {
   message("\n")
 }
 
+message("\n")
+
+message("\n3. Rebuilding manifest.json...", fill = TRUE)
+if (system.file(package = "rsconnect") != "" & system.file(package = "git2r") != "") {
+  if (!any(grepl("manifest.json", git2r::status()))) {
+    rsconnect::writeManifest()
+    git2r::add(path = "manifest.json")
+  }
+  cat("...manifest.json rebuilt\n")
+}
+cat("\n")
+
+
 # End of hooks

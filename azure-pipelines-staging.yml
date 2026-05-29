@@ -1,0 +1,26 @@
+name: postcode-mp-lookup-$(rev:r)
+
+pool:
+  name: RSConnect
+
+trigger:
+  branches:
+    include:
+    - main
+  paths:
+    exclude:
+    - azure-pipelines.yml
+
+resources:
+  repositories:
+    - repository: posit-deploy
+      type: git
+      name: ESFA-Data-Science/posit-deploy
+
+extends:
+  template: deploy.yml@posit-deploy
+  parameters:
+    appName: mp-lookup-postcode-search
+    environments:
+    - name: Staging
+      appId: 1089
